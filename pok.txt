@@ -1,0 +1,16 @@
+int main(){
+
+int jogador;
+int velocidade;
+velocidade = 1
+ 
+if(jogador > 0; jogador++){
+
+if(jogador > jogador; jogador--){
+ }
+}
+else(jogador = 0){
+}
+
+jogador = velocidade;
+return jogador;
