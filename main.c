@@ -5,11 +5,12 @@
 #include <allegro5/allegro_primitives.h>
 
 #define LARGURA 800
-#define ALTURA 600
-#define FPS 60.0
+#define ALTURA  600
+#define FPS     60.0
 
 int main(void)
 {
+
     /* 1. Inicializacao da biblioteca e dos modulos */
     if (!al_init()) {
         fprintf(stderr, "Falha ao iniciar o Allegro.\n");
@@ -36,7 +37,55 @@ int main(void)
     al_register_event_source(fila, al_get_timer_event_source(timer));
     al_register_event_source(fila, al_get_keyboard_event_source());
 
-    /* 4. Estado do jogo */
+    /*Lixo caindo*/
+    float lixoX = 200.0f;
+    float lixoY = -40.0f;
+    float lixoLargura = 40.0f;
+    float lixoAltura = 40.0f;
+    float gravidade = 3.0f;
+
+	bool rodandoLixo = true;
+	bool redesenharLixo = true;
+
+    al_start_timer(timer);
+
+    while (rodandoLixo) {
+		ALLEGRO_EVENT ev;
+		al_wait_for_event(fila, &ev);
+		
+        if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+            rodandoLixo = false;
+        }
+
+        if (ev.type == ALLEGRO_EVENT_TIMER) {
+            lixoY += gravidade;
+
+            if (lixoY > ALTURA) {
+                lixoY = -lixoAltura;
+				lixoX = 50 + (rand() % (LARGURA - 100)); // Randomiza a posição horizontal do lixo
+                }
+            redesenharLixo = true;
+
+            }
+		if (redesenharLixo && al_is_event_queue_empty(fila)) {
+			redesenharLixo = false;
+
+			al_clear_to_color(al_map_rgb(200, 220, 255));
+
+			/*desenha o lixo caindo*/
+
+			al_draw_filled_rectangle(
+				lixoX, lixoY,
+				lixoX + lixoLargura, lixoY + lixoAltura,
+				al_map_rgb(150, 75, 0) // Cor marrom para o lixo
+			);
+			al_flip_display();
+
+		}
+	}
+
+	/* 4. Estado do jogo */
+ 
     const float TAM = 40.0f, VEL = 4.0f;
     float pisoY = 500.0f;
     float x = LARGURA / 2.0f;
@@ -48,6 +97,7 @@ int main(void)
     bool colidindo = false;
 
     /* 5. Laco principal */
+
     al_start_timer(timer);
     while (rodando) {
         ALLEGRO_EVENT ev;
@@ -66,17 +116,20 @@ int main(void)
             teclas[ev.keyboard.keycode] = false;
             break;
         case ALLEGRO_EVENT_TIMER: {
+
             /* Guarda a posicao antes de andar */
+
             float xAnterior = x;
 
             /* Movimento para os lados */
-            if (teclas[ALLEGRO_KEY_LEFT]) x -= VEL;
+            if (teclas[ALLEGRO_KEY_LEFT])  x -= VEL;
             if (teclas[ALLEGRO_KEY_RIGHT]) x += VEL;
 
             /* Mantem o personagem sobre o piso */
             y = pisoY - TAM / 2;
 
             /* Impede que saia pelas laterais da janela */
+
             if (x < TAM / 2)
                 x = TAM / 2;
 
@@ -84,13 +137,14 @@ int main(void)
                 x = LARGURA - TAM / 2;
 
             /* Verifica se encostou no bloco azul */
-            if (x + TAM / 2 >= blocoX &&
+
+            if (x + TAM / 2.5 >= blocoX &&
                 x - TAM / 2 <= blocoX + blocoLargura &&
                 y + TAM / 2 >= blocoY &&
                 y - TAM / 2 <= blocoY + blocoAltura) {
 
                 colidindo = true;
-                x = xAnterior; /* Volta para a posicao antes da colisao */
+                x = xAnterior;  /* Volta para a posicao antes da colisao */
 
             }
             else {
@@ -100,9 +154,10 @@ int main(void)
             redesenhar = true;
             break;
         }
-        }
+    }
 
         /* 6. Desenho: so quando a fila esvazia, para nao acumular atraso */
+
         if (redesenhar && al_is_event_queue_empty(fila)) {
             redesenhar = false;
             /* Fundo azul-claro */
@@ -125,10 +180,10 @@ int main(void)
             ALLEGRO_COLOR cor;
 
             if (colidindo) {
-                cor = al_map_rgb(255, 0, 0); /* verde */
+                cor = al_map_rgb(255, 0, 0);    /* vermelho */
             }
             else {
-                cor = al_map_rgb(155, 210, 190); /* azul marinho */
+                cor = al_map_rgb(155, 210, 190);  /* azul marinho */
             }
 
             /* Desenha o personagem */
@@ -140,13 +195,15 @@ int main(void)
             al_draw_text(fonte, al_map_rgb(30, 30, 30), 10, 10, 0,
                 "seta esquerda e direita para andar. ESC para sair.");
             al_flip_display();
-        }
-    }
 
+          
+        }
+     }
     /* 7. Liberacao dos recursos, na ordem inversa da criacao */
+
     al_destroy_font(fonte);
     al_destroy_event_queue(fila);
     al_destroy_timer(timer);
     al_destroy_display(janela);
     return 0;
-}
+ }  
