@@ -1,4 +1,5 @@
 
+#include <stdio.h>
 #include "menu.h"
 
 void desenharMenu(ALLEGRO_FONT* fonte, int opcaoMenu)
@@ -37,9 +38,9 @@ void desenharMenu(ALLEGRO_FONT* fonte, int opcaoMenu)
         char texto[100];
 
         if (i == opcaoMenu)
-            sprintf_s(texto, sizeof(texto), "> %s", opcoes[i]);
+            snprintf(texto, sizeof(texto), "> %s", opcoes[i]);
         else
-            sprintf_s(texto, sizeof(texto), "  %s", opcoes[i]);
+            snprintf(texto, sizeof(texto), "  %s", opcoes[i]);
 
         al_draw_text(
             fonte,
