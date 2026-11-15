@@ -54,6 +54,7 @@ int main(void)
 
     int estadoJogo = MENU;
     int opcaoMenu = 0;
+    int cenarioAtual = CENARIO_PAPEL;
 
     bool teclas[ALLEGRO_KEY_MAX] = { false };
     bool rodando = true;
@@ -144,7 +145,7 @@ int main(void)
 
                 if (ev.keyboard.keycode == ALLEGRO_KEY_DOWN) {
                     opcaoMenu++;
-
+                   
                     if (opcaoMenu > 2)
                         opcaoMenu = 0;
                 }
@@ -156,7 +157,7 @@ int main(void)
                     }
 
                     else if (opcaoMenu == 1) {
-                        estadoJogo = CONFIGURACOES;
+                        estadoJogo = TECLAS;
                     }
 
                     else if (opcaoMenu == 2) {
@@ -168,9 +169,9 @@ int main(void)
                     rodando = false;
             }
 
-            /* CONFIGURACOES */
+            /* TECLAS */
 
-            else if (estadoJogo == CONFIGURACOES) {
+            else if (estadoJogo == TECLAS) {
 
                 if (ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE ||
                     ev.keyboard.keycode == ALLEGRO_KEY_ENTER) {
@@ -183,6 +184,7 @@ int main(void)
 
             else if (estadoJogo == JOGANDO) {
 
+
                 if (ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                     estadoJogo = MENU;
                     solicitouPulo = false;
@@ -193,6 +195,11 @@ int main(void)
 
                     solicitouPulo = true;
                 }
+
+                if (ev.keyboard.keycode == ALLEGRO_KEY_1) cenarioAtual = CENARIO_PAPEL;
+                if (ev.keyboard.keycode == ALLEGRO_KEY_2) cenarioAtual = CENARIO_PLASTICO;
+                if (ev.keyboard.keycode == ALLEGRO_KEY_3) cenarioAtual = CENARIO_VIDRO;
+                if (ev.keyboard.keycode == ALLEGRO_KEY_4) cenarioAtual = CENARIO_METAL;
             }
 
             /* GAME OVER */
@@ -281,15 +288,7 @@ int main(void)
 
                     solicitouPulo = false;
 
-                    /* Colisao lateral com a plataforma */
 
-                    if (x + TAM / 2 > blocoX &&
-                        x - TAM / 2 < blocoX + blocoLargura &&
-                        y + TAM / 2 > blocoY &&
-                        y - TAM / 2 < blocoY + blocoAltura) {
-
-                        x = xAnterior;
-                    }
 
                     /* Gravidade */
 
@@ -305,31 +304,6 @@ int main(void)
                         y = pisoY - TAM / 2;
                         velocidadeY = 0;
                         noChao = true;
-                    }
-
-                    /* Pousar em cima da plataforma */
-
-                    if (velocidadeY >= 0 &&
-                        yAnterior + TAM / 2 <= blocoY &&
-                        y + TAM / 2 >= blocoY &&
-                        x + TAM / 2 > blocoX &&
-                        x - TAM / 2 < blocoX + blocoLargura) {
-
-                        y = blocoY - TAM / 2;
-                        velocidadeY = 0;
-                        noChao = true;
-                    }
-
-                    /* Bater na parte de baixo da plataforma */
-
-                    if (velocidadeY < 0 &&
-                        yAnterior - TAM / 2 >= blocoY + blocoAltura &&
-                        y - TAM / 2 <= blocoY + blocoAltura &&
-                        x + TAM / 2 > blocoX &&
-                        x - TAM / 2 < blocoX + blocoLargura) {
-
-                        y = blocoY + blocoAltura + TAM / 2;
-                        velocidadeY = 0;
                     }
 
                     /* Atualizacao do lixo */
@@ -350,6 +324,7 @@ int main(void)
                         y + TAM / 2 > lixoY) {
 
                         pontuacao++;
+                        cenarioAtual = (pontuacao / 10) % TOTAL_CENARIOS;
 
                         lixoY = -lixoAltura;
                         lixoX = 50 + rand() % (LARGURA - 100);
@@ -416,11 +391,11 @@ int main(void)
                 desenharMenu(fonte, opcaoMenu);
             }
 
-            /* TELA DE CONFIGURACOES */
+            /* TELA DE TECLAS */
 
-            else if (estadoJogo == CONFIGURACOES) {
+            else if (estadoJogo == TECLAS) {
 
-                desenharConfiguracoes(fonte);
+                desenharTeclas(fonte);
             }
 
             /* TELA DO JOGO */
@@ -430,11 +405,8 @@ int main(void)
 
                 /* Piso */
 
-                al_draw_filled_rectangle(
-                    0, pisoY,
-                    LARGURA, ALTURA,
-                    al_map_rgb(110, 150, 90)
-                );
+                cenarios(cenarioAtual, pisoY);
+
 
                 /* Lixo */
 
@@ -443,15 +415,6 @@ int main(void)
                     lixoX + lixoLargura,
                     lixoY + lixoAltura,
                     al_map_rgb(150, 75, 0)
-                );
-
-                /* Plataforma azul */
-
-                al_draw_filled_rectangle(
-                    blocoX, blocoY,
-                    blocoX + blocoLargura,
-                    blocoY + blocoAltura,
-                    al_map_rgb(0, 100, 255)
                 );
 
                 /* Inimigo */
