@@ -9,6 +9,7 @@
 #include <allegro5/allegro_primitives.h>
 
 #include "menu.h"
+#include "cenarios.h"
 
 #define LARGURA 800
 #define ALTURA 600
@@ -78,13 +79,6 @@ int main(void)
 
     bool noChao = true;
 
-    /* 5. Plataforma azul */
-
-    float blocoX = 500;
-    float blocoY = 400;
-    float blocoLargura = 100;
-    float blocoAltura = 100;
-
     /* 6. Lixo caindo */
 
     float lixoX = 400;
@@ -145,7 +139,7 @@ int main(void)
 
                 if (ev.keyboard.keycode == ALLEGRO_KEY_DOWN) {
                     opcaoMenu++;
-                   
+
                     if (opcaoMenu > 2)
                         opcaoMenu = 0;
                 }
@@ -157,7 +151,7 @@ int main(void)
                     }
 
                     else if (opcaoMenu == 1) {
-                        estadoJogo = TECLAS;
+                        estadoJogo = CONFIGURACOES;
                     }
 
                     else if (opcaoMenu == 2) {
@@ -169,9 +163,9 @@ int main(void)
                     rodando = false;
             }
 
-            /* TECLAS */
+            /* CONFIGURACOES */
 
-            else if (estadoJogo == TECLAS) {
+            else if (estadoJogo == CONFIGURACOES) {
 
                 if (ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE ||
                     ev.keyboard.keycode == ALLEGRO_KEY_ENTER) {
@@ -259,9 +253,6 @@ int main(void)
                 }
 
                 if (estadoJogo == JOGANDO) {
-
-                    float xAnterior = x;
-                    float yAnterior = y;
 
                     /* Movimento horizontal */
 
@@ -391,11 +382,11 @@ int main(void)
                 desenharMenu(fonte, opcaoMenu);
             }
 
-            /* TELA DE TECLAS */
+            /* TELA DE CONFIGURACOES */
 
-            else if (estadoJogo == TECLAS) {
+            else if (estadoJogo == CONFIGURACOES) {
 
-                desenharTeclas(fonte);
+                desenharConfiguracoes(fonte);
             }
 
             /* TELA DO JOGO */
@@ -458,7 +449,7 @@ int main(void)
 
                 char texto[50];
 
-                sprintf_s(
+                snprintf(
                     texto,
                     sizeof(texto),
                     "Pontuacao: %d",
