@@ -38,8 +38,12 @@ int main(void)
     ALLEGRO_EVENT_QUEUE* fila = al_create_event_queue();
     ALLEGRO_FONT* fonte = al_create_builtin_font();
 
-    if (!janela || !timer || !fila || !fonte) {
+    if (!janela || !timer || !fila || !fonte ) {
         fprintf(stderr, "Falha ao criar recursos.\n");
+        return 1;
+    }
+
+    if (!cenariosCarregar()) {
         return 1;
     }
 
@@ -68,7 +72,7 @@ int main(void)
     const float TAM = 40.0f;
     const float VEL = 4.0f;
 
-    float pisoY = 500.0f;
+    float pisoY = 550.0f;
 
     float x = LARGURA / 2.0f;
     float y = pisoY - TAM / 2;
@@ -79,7 +83,7 @@ int main(void)
 
     bool noChao = true;
 
-    /* 6. Lixo caindo */
+    /* 5. Lixo caindo */
 
     float lixoX = 400;
     float lixoY = -40;
@@ -90,12 +94,12 @@ int main(void)
 
     int pontuacao = 0;
 
-    /* 7. Vidas */
+    /* 6. Vidas */
 
     int vidas = 3;
     int tempoProtecao = 0;
 
-    /* 8. Inimigo */
+    /* 7. Inimigo */
 
     float inimigoX = 100;
     float inimigoY = pisoY - 40;
@@ -104,7 +108,7 @@ int main(void)
     float velocidadeInimigo = 2;
     int direcaoInimigo = 1;
 
-    /* 9. Loop principal */
+    /* 8. Loop principal */
 
     al_start_timer(timer);
 
@@ -367,7 +371,7 @@ int main(void)
         }
         }
 
-        /* 10. DESENHO DAS TELAS */
+        /* 9. DESENHO DAS TELAS */
 
         if (redesenhar && al_is_event_queue_empty(fila)) {
 
@@ -396,7 +400,7 @@ int main(void)
 
                 /* Piso */
 
-                cenarios(cenarioAtual, pisoY);
+                cenarios(cenarioAtual);
 
 
                 /* Lixo */
@@ -407,6 +411,7 @@ int main(void)
                     lixoY + lixoAltura,
                     al_map_rgb(150, 75, 0)
                 );
+
 
                 /* Inimigo */
 
@@ -543,8 +548,9 @@ int main(void)
         }
     }
 
-    /* 11. Liberacao dos recursos */
+    /* 10. Liberacao dos recursos */
 
+    cenariosLiberar();
     al_destroy_font(fonte);
     al_destroy_event_queue(fila);
     al_destroy_timer(timer);
