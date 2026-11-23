@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -38,7 +37,7 @@ int main(void)
     ALLEGRO_EVENT_QUEUE* fila = al_create_event_queue();
     ALLEGRO_FONT* fonte = al_create_builtin_font();
 
-    if (!janela || !timer || !fila || !fonte ) {
+    if (!janela || !timer || !fila || !fonte) {
         fprintf(stderr, "Falha ao criar recursos.\n");
         return 1;
     }
@@ -91,6 +90,8 @@ int main(void)
     float lixoLargura = 40;
     float lixoAltura = 40;
     float velocidadeLixo = 3;
+
+    bool carregando = false;
 
     int pontuacao = 0;
 
@@ -237,6 +238,7 @@ int main(void)
                     velocidadeY = 0;
                     noChao = true;
                     solicitouPulo = false;
+                    carregando = false;
 
                     vidas = 3;
                     pontuacao = 0;
@@ -301,28 +303,28 @@ int main(void)
                         noChao = true;
                     }
 
-                    /* Atualizacao do lixo */
+                    /* Atualizacao do lixo (so cai se nao estiver carregando) */
 
-                    lixoY += velocidadeLixo;
+                    if (!carregando) {
 
-                    if (lixoY > ALTURA) {
+                        lixoY += velocidadeLixo;
 
-                        lixoY = -lixoAltura;
-                        lixoX = 50 + rand() % (LARGURA - 100);
+                        if (lixoY > ALTURA) {
+
+                            lixoY = -lixoAltura;
+                            lixoX = 50 + rand() % (LARGURA - 100);
+                        }
                     }
 
-                    /* Coletar lixo */
+                    /* Pegar lixo (por enquanto nao ganha ponto) */
 
-                    if (x - TAM / 2 < lixoX + lixoLargura &&
+                    if (!carregando &&
+                        x - TAM / 2 < lixoX + lixoLargura &&
                         x + TAM / 2 > lixoX &&
                         y - TAM / 2 < lixoY + lixoAltura &&
                         y + TAM / 2 > lixoY) {
 
-                        pontuacao++;
-                        cenarioAtual = (pontuacao / 10) % TOTAL_CENARIOS;
-
-                        lixoY = -lixoAltura;
-                        lixoX = 50 + rand() % (LARGURA - 100);
+                        carregando = true;
                     }
 
                     /* Movimento do inimigo */
@@ -403,14 +405,28 @@ int main(void)
                 cenarios(cenarioAtual);
 
 
-                /* Lixo */
+                /* Lixo (se estiver carregando, fica em cima do personagem) */
 
-                al_draw_filled_rectangle(
-                    lixoX, lixoY,
-                    lixoX + lixoLargura,
-                    lixoY + lixoAltura,
-                    al_map_rgb(150, 75, 0)
-                );
+                if (carregando) {
+
+                    al_draw_filled_rectangle(
+                        x - lixoLargura / 2,
+                        y - TAM / 2 - lixoAltura,
+                        x + lixoLargura / 2,
+                        y - TAM / 2,
+                        al_map_rgb(150, 75, 0)
+                    );
+                }
+
+                else {
+
+                    al_draw_filled_rectangle(
+                        lixoX, lixoY,
+                        lixoX + lixoLargura,
+                        lixoY + lixoAltura,
+                        al_map_rgb(150, 75, 0)
+                    );
+                }
 
 
                 /* Inimigo */
