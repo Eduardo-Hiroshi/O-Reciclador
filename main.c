@@ -93,6 +93,13 @@ int main(void)
 
     bool carregando = false;
 
+    /* 🟦 ALTERAÇÃO 1: CRIACAO DA LIXEIRA */
+
+    float lixeiraLargura = 65;
+    float lixeiraAltura = 65;
+    float lixeiraX = LARGURA - 90;
+    float lixeiraY = pisoY - lixeiraAltura;
+
     int pontuacao = 0;
 
     /* 6. Vidas */
@@ -326,6 +333,26 @@ int main(void)
 
                         carregando = true;
                     }
+/* 🟦 ALTERAÇÃO 2: DEPOSITAR O LIXO NA LIXEIRA */
+
+                    if (carregando &&
+                        x + TAM / 2 > lixeiraX - 10 &&
+                        x - TAM / 2 < lixeiraX + lixeiraLargura + 10 &&
+                        y + TAM / 2 > lixeiraY &&
+                        y - TAM / 2 < pisoY) {
+
+                        carregando = false;
+
+                        /* 🟦 ALTERAÇÃO 3: SOMAR 10 PONTOS */
+
+                        pontuacao += 10;
+
+                        /* 🟦 ALTERAÇÃO 4: FAZER APARECER OUTRO LIXO */
+
+                        lixoY = -lixoAltura;
+                        lixoX = 50 + rand() % (LARGURA - 200);
+                    }
+
 
                     /* Movimento do inimigo */
 
@@ -403,6 +430,35 @@ int main(void)
                 /* Piso */
 
                 cenarios(cenarioAtual);
+
+/* 🟦 ALTERAÇÃO 5: DESENHAR A LIXEIRA */
+
+                al_draw_filled_rectangle(
+                    lixeiraX, lixeiraY + 10,
+                    lixeiraX + lixeiraLargura, pisoY,
+                    al_map_rgb(40, 130, 70)
+                );
+
+                al_draw_filled_rectangle(
+                    lixeiraX - 5, lixeiraY,
+                    lixeiraX + lixeiraLargura + 5, lixeiraY + 12,
+                    al_map_rgb(25, 90, 50)
+                );
+
+                al_draw_rectangle(
+                    lixeiraX, lixeiraY + 10,
+                    lixeiraX + lixeiraLargura, pisoY,
+                    al_map_rgb(0, 60, 25), 2
+                );
+
+                al_draw_text(
+                    fonte,
+                    al_map_rgb(255, 255, 255),
+                    lixeiraX + lixeiraLargura / 2, lixeiraY + 32,
+                    ALLEGRO_ALIGN_CENTER,
+                    "LIXEIRA"
+                );
+
 
 
                 /* Lixo (se estiver carregando, fica em cima do personagem) */
@@ -526,21 +582,17 @@ int main(void)
                         al_map_rgb(30, 30, 30)
                     );
 
+
+/* 🟦 ALTERAÇÃO 6: NOVA MENSAGEM DO GAME OVER */
+
                     al_draw_text(
                         fonte,
                         al_map_rgb(255, 50, 50),
                         400, 250,
                         ALLEGRO_ALIGN_CENTER,
-                        "GAME OVER"
+                        "Perdeu, tente de novo!"
                     );
 
-                    al_draw_text(
-                        fonte,
-                        al_map_rgb(255, 255, 255),
-                        400, 280,
-                        ALLEGRO_ALIGN_CENTER,
-                        "Voce perdeu todas as vidas!"
-                    );
 
                     al_draw_text(
                         fonte,
